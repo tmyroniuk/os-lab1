@@ -36,7 +36,7 @@ public class Worker<R extends Serializable> implements Runnable {
                 } catch (IOException ignored) {}
             }
         } catch (InterruptedException e) {
-            System.out.println("One thread interrupted\n");
+            System.out.println("One thread interrupted");
         } catch (IOException e) {
             System.out.println("IO Exception\n");
         }
