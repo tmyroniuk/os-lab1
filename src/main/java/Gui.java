@@ -1,5 +1,7 @@
 import lab1.manager.ConjunctionManager;
 import lab1.manager.DisjunctionManager;
+import lab1.manager.DoubleManager;
+import lab1.manager.IntManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +41,7 @@ class Gui {
     }
 
     public static void main(String args[]) {
-        String s[] = {"AND", "OR"};
+        String s[] = {"AND", "OR", "INT", "DOUBLE"};
         Label argL= new Label();
         argL.setText("X:");
         argL.setBounds(20,50, 30,20);
@@ -58,8 +60,11 @@ class Gui {
                 switch (operationBox.getSelectedIndex()) {
                     case 0 -> thread = new Thread(new ConjunctionManager(arg, input));
                     case 1 -> thread = new Thread(new DisjunctionManager(arg, input));
+                    case 2 -> thread = new Thread(new IntManager(arg, input));
+                    case 3 -> thread = new Thread(new DoubleManager(arg, input));
                 }
                 startButton.setEnabled(false);
+                resultText.setText("");
                 thread.start();
             }
         });
