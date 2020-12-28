@@ -1,18 +1,21 @@
 package lab1;
 
 import java.io.*;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 public class Worker<R extends Serializable> implements Runnable {
     private PipedOutputStream output;
     private ThreadFunction<Integer, R> func;
-    private final Semaphore semaphore;
+    private final Condition gotResult;
+    private Lock lock;
     private final int arg;
 
-    public Worker(ThreadFunction<Integer, R> func , int arg, PipedInputStream inputStream, Semaphore semaphore) {
+    public Worker(ThreadFunction<Integer, R> func , int arg, PipedInputStream inputStream, Lock lock, Condition gotResult) {
         this.func = func;
         this.arg = arg;
-        this.semaphore = semaphore;
+        this.lock = lock;
+        this.gotResult = gotResult;
         try {
             output = new PipedOutputStream(inputStream);
         } catch (IOException e) {
@@ -29,11 +32,11 @@ public class Worker<R extends Serializable> implements Runnable {
                 out = new ObjectOutputStream(output);
                 out.writeObject(res);
                 out.flush();
-                semaphore.release();
+                lock.lock();
+                gotResult.signal();
             } finally {
-                try {
-                    output.close();
-                } catch (IOException ignored) {}
+                lock.unlock();
+                output.close();
             }
         } catch (InterruptedException e) {
             System.out.println("One thread interrupted");
